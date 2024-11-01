@@ -5,10 +5,12 @@
   "permissions": [
     "storage",
     "activeTab",
-    "scripting"
+    "scripting",
+    "contextMenus"
   ],
   "background": {
     "service_worker": "background.js"
   },
-  "action": {}
+  "action": {},
+  "options_page": "filters.html"
 }

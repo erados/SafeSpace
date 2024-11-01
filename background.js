@@ -1,5 +1,20 @@
 let isSelecting = false;
 
+// background.js 파일 맨 위에 추가
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: 'viewFilters',
+    title: '필터 목록 보기',
+    contexts: ['action']
+  });
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => { 
+  if (info.menuItemId === 'viewFilters') {
+    chrome.runtime.openOptionsPage();
+  }
+});
+
 // 액션 클릭 핸들러
 chrome.action.onClicked.addListener(async (tab) => {
   if (isSelecting) {
