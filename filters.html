@@ -55,18 +55,82 @@
       color: #666;
       font-size: 0.9em;
     }
+    .header-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .import-export-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    
+    .export-btn {
+      background: #2196F3;
+      color: white;
+    }
+    
+    .export-btn:hover {
+      background: #1976D2;
+    }
+    
+    .import-btn {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .import-btn:hover {
+      background: #388E3C;
+    }
+    
+    .clear-btn {
+      background: #ff4444;
+      color: white;
+    }
+    
+    .clear-btn:hover {
+      background: #cc0000;
+    }
+
+    .filter-share {
+      margin-top: 5px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .share-btn {
+      background: #9C27B0;
+      color: white;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .share-btn:hover {
+      background: #7B1FA2;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h2>저장된 필터 목록</h2>
-      <button id="clearAll" style="background: #ff4444; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">
-        전체 삭제
-      </button>
+      <div class="header-buttons">
+        <button id="exportBtn" class="import-export-btn export-btn">내보내기</button>
+        <button id="importBtn" class="import-export-btn import-btn">가져오기</button>
+        <button id="clearAll" class="import-export-btn clear-btn">전체 삭제</button>
+      </div>
     </div>
     <div id="filterList"></div>
   </div>
+  <input type="file" id="importFile" accept=".json" style="display: none;">
   <script src="filters.js"></script>
 </body>
 </html> 

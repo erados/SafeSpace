@@ -233,55 +233,89 @@ function startSelection() {
     
     // 필터 텍스트 입력 UI
     const filterUI = document.createElement('div');
+    filterUI.style.cssText = `
+      margin-bottom: 15px;
+      width: 100%;
+      box-sizing: border-box;
+    `;
+    
     filterUI.innerHTML = `
-      <div style="margin-bottom: 15px;">
-        <div style="margin-bottom: 10px;">필터링할 텍스트 입력:</div>
-        <input type="text" id="filterText" style="
-          width: 100%;
-          padding: 5px;
-          border: 1px solid #ccc;
-          border-radius: 3px;
-          background: white;
-          color: black;
-        ">
-      </div>
+      <div style="margin-bottom: 10px;">필터링할 텍스트 입력:</div>
+      <input type="text" id="filterText" style="
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.9);
+        color: black;
+        box-sizing: border-box;
+        font-size: 14px;
+      ">
     `;
     logArea.appendChild(filterUI);
-    
+
+    // 입력 필드에 포커스
+    const filterInput = document.getElementById('filterText');
+    filterInput.focus();
+
+    // 엔터 키 이벤트 처리
+    filterInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        previewButton.click();
+      }
+    });
+
     // 미리보기 버튼
     const previewButton = document.createElement('button');
     previewButton.textContent = '미리보기';
     previewButton.style.cssText = `
       margin-top: 10px;
-      padding: 5px 10px;
+      padding: 8px;
       background: #2196F3;
       border: none;
-      border-radius: 3px;
+      border-radius: 4px;
       color: white;
       cursor: pointer;
       width: 100%;
+      font-size: 14px;
+      transition: background-color 0.2s;
     `;
+    previewButton.addEventListener('mouseover', () => {
+      previewButton.style.background = '#1976D2';
+    });
+    previewButton.addEventListener('mouseout', () => {
+      previewButton.style.background = '#2196F3';
+    });
     logArea.appendChild(previewButton);
-    
+
     // 미리보기 영역
     const previewArea = document.createElement('div');
     previewArea.style.marginTop = '15px';
     logArea.appendChild(previewArea);
-    
+
     // 저장 버튼 (처음에는 숨김)
     const saveButton = document.createElement('button');
     saveButton.textContent = '필터 저장';
     saveButton.style.cssText = `
       margin-top: 10px;
-      padding: 5px 10px;
+      padding: 8px;
       background: #4CAF50;
       border: none;
-      border-radius: 3px;
+      border-radius: 4px;
       color: white;
       cursor: pointer;
       width: 100%;
       display: none;
+      font-size: 14px;
+      transition: background-color 0.2s;
     `;
+    saveButton.addEventListener('mouseover', () => {
+      saveButton.style.background = '#388E3C';
+    });
+    saveButton.addEventListener('mouseout', () => {
+      saveButton.style.background = '#4CAF50';
+    });
     logArea.appendChild(saveButton);
     
     // 미리보기 버튼 클릭 핸들러
