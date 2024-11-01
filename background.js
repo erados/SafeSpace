@@ -18,14 +18,34 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 // 액션 클릭 핸들러
 chrome.action.onClicked.addListener(async (tab) => {
   if (isSelecting) {
+    // 선택 모드 종료
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        function: cleanupSelection
+      });
+    } catch (error) {
+      console.error('Cleanup script execution failed:', error);
+    }
+    
     isSelecting = false;
-    await chrome.action.setBadgeText({ text: '' });
-    await chrome.action.setTitle({ title: '요소 선택 시작' });
+    // 필터 수를 다시 표시
+    updateFilterBadge(tab.id);
   } else {
+    // 선택 모드 시작
     isSelecting = true;
-    await chrome.action.setBadgeText({ text: 'ON' });
-    await chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' });
-    await chrome.action.setTitle({ title: '선택 모드 활성화됨' });
+    await chrome.action.setBadgeText({ 
+      text: 'ON',
+      tabId: tab.id 
+    });
+    await chrome.action.setBadgeBackgroundColor({ 
+      color: '#4CAF50',
+      tabId: tab.id
+    });
+    await chrome.action.setTitle({ 
+      title: '선택 모드 활성화됨',
+      tabId: tab.id
+    });
     
     try {
       await chrome.scripting.executeScript({
@@ -35,11 +55,58 @@ chrome.action.onClicked.addListener(async (tab) => {
     } catch (error) {
       console.error('스크립트 실행 중 오류:', error);
       isSelecting = false;
-      await chrome.action.setBadgeText({ text: 'ERR' });
-      await chrome.action.setBadgeBackgroundColor({ color: '#F44336' });
+      await chrome.action.setBadgeText({ 
+        text: 'ERR',
+        tabId: tab.id
+      });
+      await chrome.action.setBadgeBackgroundColor({ 
+        color: '#F44336',
+        tabId: tab.id
+      });
     }
   }
 });
+
+// 필터 수 업데이트 함수
+async function updateFilterBadge(tabId) {
+  try {
+    // 선택 모드가 활성화되어 있다면 업데이트하지 않음
+    if (isSelecting) return;
+
+    const tab = await chrome.tabs.get(tabId);
+    const url = new URL(tab.url);
+    const domain = url.hostname;
+    
+    const { filters = [] } = await chrome.storage.local.get('filters');
+    const domainFilters = filters.filter(f => f.domain === domain);
+    
+    if (domainFilters.length > 0) {
+      await chrome.action.setBadgeText({ 
+        text: domainFilters.length.toString(),
+        tabId: tabId
+      });
+      await chrome.action.setBadgeBackgroundColor({ 
+        color: '#2196F3',
+        tabId: tabId
+      });
+      await chrome.action.setTitle({ 
+        title: `활성 필터: ${domainFilters.length}개`,
+        tabId: tabId
+      });
+    } else {
+      await chrome.action.setBadgeText({ 
+        text: '',
+        tabId: tabId
+      });
+      await chrome.action.setTitle({ 
+        title: '요소 선택 시작',
+        tabId: tabId
+      });
+    }
+  } catch (error) {
+    console.error('배지 업데이트 중 오류:', error);
+  }
+}
 
 // 필터 저장 메시지 리스너
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -56,6 +123,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
     return true;
   }
+  if (message.action === 'selectionCanceled') {
+    isSelecting = false;
+    chrome.action.setBadgeText({ text: '' });
+    chrome.action.setTitle({ title: '요소 선택 시작' });
+  }
 });
 
 async function saveFilter(filter) {
@@ -63,6 +135,10 @@ async function saveFilter(filter) {
     const { filters = [] } = await chrome.storage.local.get('filters');
     filters.push(filter);
     await chrome.storage.local.set({ filters });
+    
+    // 필터 저장 후 즉시 적용
+    await applyNewFilter(filter);
+    
     return true;
   } catch (error) {
     throw new Error('필터 저장 중 오류가 발생했습니다: ' + error.message);
@@ -261,19 +337,38 @@ function startSelection() {
       try {
         const response = await chrome.runtime.sendMessage({
           action: 'saveFilter',
-          filter: filter
+          filter: filter,
+          tabId: await new Promise(resolve => 
+            chrome.runtime.sendMessage({ action: 'getCurrentTabId' }, response => 
+              resolve(response.tabId)
+            )
+          )
         });
         
         if (response.success) {
+          // 모든 테두리 제거
+          document.querySelectorAll('[style*="outline"]').forEach(el => {
+            el.style.outline = '';
+            el.removeAttribute('data-hover');
+            el.removeAttribute('data-preview');
+          });
+
+          // 성공 메시지 표시
           logArea.innerHTML = `
             <div style="color: #4CAF50;">
               필터가 성공적으로 저장되었습니다!
             </div>
           `;
-          
+
           setTimeout(() => {
-            uiContainer.remove();
-          }, 2000);
+            if (uiContainer && uiContainer.parentNode) {
+              uiContainer.remove();
+            }
+            chrome.runtime.sendMessage({ action: 'filterSaved' });
+          }, 1000);
+
+          document.removeEventListener('mouseover', handleMouseOver);
+          document.removeEventListener('click', handleClick, true);
         } else {
           throw new Error(response.error || '알 수 없는 오류가 발생했습니다.');
         }
@@ -294,10 +389,12 @@ function startSelection() {
     
     if (hoveredElement) {
       hoveredElement.style.outline = '';
+      hoveredElement.removeAttribute('data-hover');
     }
     
     hoveredElement = e.target;
-    hoveredElement.style.outline = '2px solid red';
+    hoveredElement.style.outline = '2px solid green';
+    hoveredElement.setAttribute('data-hover', 'true');
     
     const result = findSimilarElements(e.target);
     updateLog(result);
@@ -329,55 +426,93 @@ function startSelection() {
   document.addEventListener('mouseover', handleMouseOver);
   document.addEventListener('click', handleClick, true);
   
-  // ESC 키 처리
-  document.addEventListener('keydown', function(e) {
+  // ESC 키 처리 수정
+  document.addEventListener('keydown', async function(e) {
     if (e.key === 'Escape') {
-      isSelecting = false;
-      if (hoveredElement) {
-        hoveredElement.style.outline = '';
+      // 모든 테두리 제거
+      document.querySelectorAll('[style*="outline"]').forEach(el => {
+        el.style.outline = '';
+        el.removeAttribute('data-hover');
+        el.removeAttribute('data-preview');
+      });
+
+      // UI 컨테이너 제거
+      if (uiContainer && uiContainer.parentNode) {
+        uiContainer.remove();
       }
-      uiContainer.remove();
+
+      // 이벤트 리스너 제거
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('click', handleClick, true);
+
+      // background 스크립트에 선택 모드 종료 알림
+      try {
+        await chrome.runtime.sendMessage({ 
+          action: 'selectionCanceled'
+        });
+      } catch (error) {
+        console.error('메시지 전송 중 오류:', error);
+      }
+    }
+  });
+
+  function cleanup(keepPreview = false) {
+    // 호버 효과 제거
+    document.querySelectorAll('[style*="outline"][data-hover="true"]').forEach(el => {
+      el.style.outline = '';
+      el.removeAttribute('data-hover');
+    });
+
+    // 미리보기 유지 옵션이 false일 때만 미리보기 테두리 제거
+    if (!keepPreview) {
+      document.querySelectorAll('[style*="outline"][data-preview="true"]').forEach(el => {
+        el.style.outline = '';
+        el.removeAttribute('data-preview');
+      });
+    }
+
+    // 이벤트 리스너 제거
+    document.removeEventListener('mouseover', handleMouseOver);
+    document.removeEventListener('click', handleClick, true);
+  }
+
+  // 아이콘 클릭으로 선택 모드 종료 시에도 cleanup 실행
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'stopSelection') {
+      cleanup(false);
+      uiContainer.remove();
     }
   });
 }
 
 // 페이지 로드 완료 시 필터 적용
 chrome.webNavigation.onCompleted.addListener(async (details) => {
-  // 프레임이 아닌 메인 페이지일 때만 실행
   if (details.frameId === 0) {
     try {
       const { filters = [] } = await chrome.storage.local.get('filters');
       const url = new URL(details.url);
       const domain = url.hostname;
       
-      // 현재 도메인에 해당하는 필터만 선택
       const domainFilters = filters.filter(f => f.domain === domain);
       
       if (domainFilters.length > 0) {
-        // 배지에 필터 수 표시
-        chrome.action.setBadgeText({ 
-          text: domainFilters.length.toString(),
-          tabId: details.tabId
-        });
-        chrome.action.setBadgeBackgroundColor({ 
-          color: '#4CAF50',
-          tabId: details.tabId
-        });
+        // 선택 모드가 아닐 때만 필터 수 표시
+        if (!isSelecting) {
+          updateFilterBadge(details.tabId);
+        }
         
-        // 필터 적용 스크립트 실행
         await chrome.scripting.executeScript({
           target: { tabId: details.tabId },
           func: applyFilters,
           args: [domainFilters]
         });
       } else {
-        // 필터가 없으면 배지 제거
-        chrome.action.setBadgeText({ 
-          text: '',
-          tabId: details.tabId
-        });
+        if (!isSelecting) {
+          await chrome.action.setBadgeText({ 
+            text: '',
+            tabId: details.tabId
+          });
+        }
       }
     } catch (error) {
       console.error('필터 적용 중 오류:', error);
@@ -387,6 +522,14 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
 
 // 필터 적용 함수
 function applyFilters(filters) {
+  // 기존 테두리 모두 제거
+  document.querySelectorAll('[style*="outline"]').forEach(el => {
+    el.style.outline = '';
+  });
+  document.querySelectorAll('[data-highlight]').forEach(el => {
+    el.removeAttribute('data-highlight');
+  });
+
   // CSS 스타일 생성
   const style = document.createElement('style');
   style.id = 'safespace-filters';
@@ -439,4 +582,98 @@ function applyFilters(filters) {
     filterCount: filters.length,
     appliedAt: new Date().toISOString()
   };
-} 
+}
+
+// 정리를 위한 새로운 함수
+function cleanupSelection() {
+  // 모든 테두리 제거
+  document.querySelectorAll('[style*="outline"]').forEach(el => {
+    el.style.outline = '';
+    el.removeAttribute('data-hover');
+    el.removeAttribute('data-preview');
+  });
+
+  // UI 컨테이너 제거
+  const uiContainer = document.querySelector('div[style*="position: fixed"][style*="z-index: 10000"]');
+  if (uiContainer) {
+    uiContainer.remove();
+  }
+
+  // 이벤트 리스너 제거 (startSelection 함수에서 추가된 것들)
+  document.removeEventListener('mouseover', handleMouseOver);
+  document.removeEventListener('click', handleClick, true);
+}
+
+// ESC 키나 저장 완료 후 배지 업데이트
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'selectionCanceled' || message.action === 'filterSaved') {
+    isSelecting = false;
+    updateFilterBadge(sender.tab.id);
+  }
+});
+
+// 필터 저장 후 즉시 적용하는 함수 추가
+function applyNewFilter(filter) {
+  return chrome.scripting.executeScript({
+    target: { tabId: filter.tabId },
+    func: applyFilterToPage,
+    args: [filter]
+  });
+}
+
+// 페이지에서 실행될 필터 적용 함수
+function applyFilterToPage(filter) {
+  const elements = document.querySelectorAll(filter.selector);
+  elements.forEach(element => {
+    if (element.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
+      element.style.display = 'none';
+    }
+  });
+  
+  // 동적 콘텐츠를 위한 옵저버 설정
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1 && node.matches(filter.selector)) {
+          if (node.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
+            node.style.display = 'none';
+          }
+        }
+      });
+    });
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  return true;
+}
+
+// background.js의 메시지 리스너 수정
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'getCurrentTabId') {
+    sendResponse({ tabId: sender.tab.id });
+    return true;
+  }
+  
+  if (message.action === 'saveFilter') {
+    const filter = message.filter;
+    filter.tabId = message.tabId;
+    
+    saveFilter(filter)
+      .then(() => {
+        sendResponse({ success: true });
+        // 저장 후 즉시 필터 적용
+        return applyNewFilter(filter);
+      })
+      .catch(error => {
+        console.error('필터 저장/적용 중 오류:', error);
+        sendResponse({ success: false, error: error.message });
+      });
+    return true;
+  }
+
+  // ... 기존 메시지 핸들러 ...
+});
