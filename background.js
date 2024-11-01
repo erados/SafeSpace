@@ -341,4 +341,102 @@ function startSelection() {
       document.removeEventListener('click', handleClick, true);
     }
   });
+}
+
+// 페이지 로드 완료 시 필터 적용
+chrome.webNavigation.onCompleted.addListener(async (details) => {
+  // 프레임이 아닌 메인 페이지일 때만 실행
+  if (details.frameId === 0) {
+    try {
+      const { filters = [] } = await chrome.storage.local.get('filters');
+      const url = new URL(details.url);
+      const domain = url.hostname;
+      
+      // 현재 도메인에 해당하는 필터만 선택
+      const domainFilters = filters.filter(f => f.domain === domain);
+      
+      if (domainFilters.length > 0) {
+        // 배지에 필터 수 표시
+        chrome.action.setBadgeText({ 
+          text: domainFilters.length.toString(),
+          tabId: details.tabId
+        });
+        chrome.action.setBadgeBackgroundColor({ 
+          color: '#4CAF50',
+          tabId: details.tabId
+        });
+        
+        // 필터 적용 스크립트 실행
+        await chrome.scripting.executeScript({
+          target: { tabId: details.tabId },
+          func: applyFilters,
+          args: [domainFilters]
+        });
+      } else {
+        // 필터가 없으면 배지 제거
+        chrome.action.setBadgeText({ 
+          text: '',
+          tabId: details.tabId
+        });
+      }
+    } catch (error) {
+      console.error('필터 적용 중 오류:', error);
+    }
+  }
+});
+
+// 필터 적용 함수
+function applyFilters(filters) {
+  // CSS 스타일 생성
+  const style = document.createElement('style');
+  style.id = 'safespace-filters';
+  
+  // 각 필터에 대한 CSS 규칙 생성
+  const cssRules = filters.map(filter => {
+    return `
+      ${filter.selector}:has(:contains("${filter.filterText}")) {
+        display: none !important;
+      }
+    `;
+  }).join('\n');
+  
+  style.textContent = cssRules;
+  document.head.appendChild(style);
+  
+  // 텍스트 노드를 포함한 요소 찾기 및 숨기기
+  filters.forEach(filter => {
+    const elements = document.querySelectorAll(filter.selector);
+    elements.forEach(element => {
+      if (element.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
+        element.style.display = 'none';
+      }
+    });
+  });
+  
+  // 새로운 요소에 대한 감시
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1) { // 요소 노드인 경우
+          filters.forEach(filter => {
+            if (node.matches(filter.selector) && 
+                node.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
+              node.style.display = 'none';
+            }
+          });
+        }
+      });
+    });
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+  
+  // 필터 적용 상태 반환
+  return {
+    filterCount: filters.length,
+    appliedAt: new Date().toISOString()
+  };
 } 
