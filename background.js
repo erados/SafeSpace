@@ -108,28 +108,6 @@ async function updateFilterBadge(tabId) {
   }
 }
 
-// 필터 저장 메시지 리스너
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'saveFilter') {
-    saveFilter(message.filter)
-      .then(() => {
-        sendResponse({ success: true });
-        isSelecting = false;
-        chrome.action.setBadgeText({ text: '' });
-      })
-      .catch(error => {
-        console.error('필터 저장 중 오류:', error);
-        sendResponse({ success: false, error: error.message });
-      });
-    return true;
-  }
-  if (message.action === 'selectionCanceled') {
-    isSelecting = false;
-    chrome.action.setBadgeText({ text: '' });
-    chrome.action.setTitle({ title: '요소 선택 시작' });
-  }
-});
-
 async function saveFilter(filter) {
   try {
     const { filters = [] } = await chrome.storage.local.get('filters');
@@ -685,7 +663,7 @@ function applyFilterToPage(filter) {
   return true;
 }
 
-// background.js의 메시지 리스너 수정
+// 필터 저장 메시지 리스너
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'getCurrentTabId') {
     sendResponse({ tabId: sender.tab.id });
@@ -708,6 +686,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
     return true;
   }
-
-  // ... 기존 메시지 핸들러 ...
 });
