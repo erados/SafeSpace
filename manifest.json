@@ -1,28 +1,23 @@
 {
   "manifest_version": 3,
-  "name": "Open extension API reference",
-  "version": "1.0.0",
+  "name": "Tab Manager for Chrome Dev Docs",
+  "version": "1.0",
   "icons": {
     "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
     "128": "images/icon-128.png"
   },
-"background": {
-    "service_worker": "scripts/service-worker.js",
-    "type": "module"
+
+  "action": {
+    "default_popup": "popup.html"
   },
 
-"permissions": ["storage", "alarms"],
-"host_permissions": ["https://extension-tips.glitch.me/*"],
+  "host_permissions": [
+    "https://developer.chrome.com/*"
+  ],
 
-"minimum_chrome_version": "102",
-  "omnibox": {
-    "keyword": "api"
-  },
-
-"content_scripts": [
-    {
-      "matches": ["https://developer.chrome.com/docs/extensions/reference/*"],
-      "js": ["scripts/content.js"]
-    }
+  "permissions": [
+    "tabGroups"
   ]
 }
