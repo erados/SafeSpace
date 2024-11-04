@@ -209,6 +209,51 @@ function startSelection() {
     `;
     logArea.appendChild(selectionInfo);
     
+    // 상위 요소 선택 버튼 추가
+    const parentButton = document.createElement('button');
+    parentButton.textContent = '상위 요소 선택';
+    parentButton.style.cssText = `
+      margin-bottom: 15px;
+      padding: 8px;
+      background: #FF9800;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    `;
+    parentButton.addEventListener('mouseover', () => {
+      parentButton.style.background = '#F57C00';
+    });
+    parentButton.addEventListener('mouseout', () => {
+      parentButton.style.background = '#FF9800';
+    });
+    parentButton.addEventListener('click', () => {
+      // 현재 선택된 요소의 부모 요소 찾기
+      const currentElement = result.elements[0];
+      if (currentElement && currentElement.parentElement) {
+        // 기존 선택 효과 제거
+        result.elements.forEach(el => {
+          el.style.outline = '';
+        });
+        
+        // 새로운 선택 결과 생성
+        const newResult = findSimilarElements(currentElement.parentElement);
+        selectedElements = newResult;
+        
+        // 새로운 선택 효과 적용
+        newResult.elements.forEach(el => {
+          el.style.outline = '2px solid green';
+        });
+        
+        // UI 업데이트
+        showFilterUI(newResult);
+      }
+    });
+    logArea.appendChild(parentButton);
+
     // 필터 텍스트 입력 UI
     const filterUI = document.createElement('div');
     filterUI.style.cssText = `
