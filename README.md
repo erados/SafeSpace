@@ -10,7 +10,7 @@ SafeSpace는 사용자가 원하지 않는 특정 문구가 포함된 콘텐츠�
 
 ## 설치 방법
 
-1. [크롬 웹 스토어](https://chrome.google.com/webstore/category/extensions)에서 SafeSpace를 검색하거나 [링크](https://chromewebstore.google.com/detail/ogbpkcempgohojfamfinjnhkfjbdplae/preview?hl=ko&authuser=0)를 통해 접속합니다.
+1. [크롬 웹 스토어](https://chrome.google.com/webstore/category/extensions)에서 SafeSpace를 검색하거나 [링크](https://chromewebstore.google.com/detail/safespace/ogbpkcempgohojfamfinjnhkfjbdplae)를 통해 접속합니다.
 2. "Chrome에 추가" 버튼을 클릭하여 익스텐션을 설치합니다.
 3. 설치가 완료되면 브라우저의 툴바에서 SafeSpace 아이콘을 클릭하여 활성화합니다.
 
