@@ -189,7 +189,6 @@ function startSelection() {
     logElement.style.marginBottom = '10px';
     logElement.innerHTML = `
       <div>선택된 요소: ${result.selector}</div>
-      <div>전체 경로: ${result.fullPath}</div>
       <div>비슷한 요소 수: ${result.elements.length}개</div>
     `;
     logArea.appendChild(logElement);
@@ -203,7 +202,6 @@ function startSelection() {
     selectionInfo.innerHTML = `
       <div style="margin-bottom: 15px;">
         <div>선택된 요소: ${result.selector}</div>
-        <div>전체 경로: ${result.fullPath}</div>
         <div>발견된 비슷한 요소: ${result.elements.length}개</div>
       </div>
     `;
@@ -223,6 +221,10 @@ function startSelection() {
       width: 100%;
       font-size: 14px;
       transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
     `;
     parentButton.addEventListener('mouseover', () => {
       parentButton.style.background = '#F57C00';
@@ -303,6 +305,10 @@ function startSelection() {
       width: 100%;
       font-size: 14px;
       transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
     `;
     previewButton.addEventListener('mouseover', () => {
       previewButton.style.background = '#1976D2';
@@ -332,6 +338,10 @@ function startSelection() {
       display: none;
       font-size: 14px;
       transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
     `;
     saveButton.addEventListener('mouseover', () => {
       saveButton.style.background = '#388E3C';
@@ -591,7 +601,7 @@ function applyFilters(filters) {
   const style = document.createElement('style');
   style.id = 'safespace-filters';
   
-  // 각 필터에 대한 CSS 규칙 생성
+  // 각 필에 대한 CSS 규칙 생성
   const cssRules = filters.map(filter => {
     return `
       ${filter.selector}:has(:contains("${filter.filterText}")) {
