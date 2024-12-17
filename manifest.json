@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
   "name": "SafeSpace",
-  "version": "1.1.0",
+  "description": "유해한 콘텐츠를 차단하여 안전한 온라인 환경을 제공하는 확장 프로그램입니다.",
+  "version": "1.1.2",
   "permissions": [
     "storage",
     "activeTab",

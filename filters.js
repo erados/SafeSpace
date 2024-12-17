@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.target.classList.contains('delete-btn')) {
       const index = parseInt(e.target.dataset.index);
       const { filters = [] } = await chrome.storage.local.get('filters');
-      
+      filters.sort((a, b) => b.timestamp - a.timestamp);
       filters.splice(index, 1);
       await chrome.storage.local.set({ filters });
       await loadFilters();
