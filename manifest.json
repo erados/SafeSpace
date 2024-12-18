@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SafeSpace",
-  "description": "유해한 콘텐츠를 차단하여 안전한 온라인 환경을 제공하는 확장 프로그램입니다.",
+  "description": "Safespace는 사용자가 원치 않는 콘텐츠로부터 자신을 보호할 수 있도록 돕는 Chrome 확장 프로그램입니다.",
   "version": "1.1.2",
   "permissions": [
     "storage",
@@ -16,6 +16,20 @@
   "background": {
     "service_worker": "background.js"
   },
-  "action": {},
-  "options_page": "filters.html"
+  "action": {
+    "default_icon": {
+      "16": "images/icon-16.png",
+      "32": "images/icon-32.png",
+      "48": "images/icon-48.png",
+      "128": "images/icon-128.png"
+    },
+    "default_title": "요소 선택 시작"
+  },
+  "options_page": "filters.html",
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  }
 }
