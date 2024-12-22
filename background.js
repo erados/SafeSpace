@@ -1,10 +1,9 @@
 let isSelecting = false;
 
-// background.js 파일 맨 위에 추가
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'viewFilters',
-    title: '필터 목록 보기',
+    title: chrome.i18n.getMessage("viewFilterList"),
     contexts: ['action']
   });
 });
@@ -43,7 +42,7 @@ chrome.action.onClicked.addListener(async (tab) => {
       tabId: tab.id
     });
     await chrome.action.setTitle({ 
-      title: '선택 모드 활성화됨',
+      title: '${chrome.i18n.getMessage("startSelection")}',
       tabId: tab.id
     });
     
@@ -53,7 +52,7 @@ chrome.action.onClicked.addListener(async (tab) => {
         function: startSelection
       });
     } catch (error) {
-      console.error('스크립트 실행 중 오류:', error);
+      console.error('Error when script execution:', error);
       isSelecting = false;
       await chrome.action.setBadgeText({ 
         text: 'ERR',
@@ -188,8 +187,8 @@ function startSelection() {
     const logElement = document.createElement('div');
     logElement.style.marginBottom = '10px';
     logElement.innerHTML = `
-      <div>선택된 요소: ${result.selector}</div>
-      <div>비슷한 요소 수: ${result.elements.length}개</div>
+      <div>${chrome.i18n.getMessage("selectedElement")}: ${result.selector}</div>
+      <div>${chrome.i18n.getMessage("foundSimilarElements")}: ${result.elements.length}개</div>
     `;
     logArea.appendChild(logElement);
   }
@@ -201,15 +200,15 @@ function startSelection() {
     const selectionInfo = document.createElement('div');
     selectionInfo.innerHTML = `
       <div style="margin-bottom: 15px;">
-        <div>선택된 요소: ${result.selector}</div>
-        <div>발견된 비슷한 요소: ${result.elements.length}개</div>
+        <div>${chrome.i18n.getMessage("selectedElement")}: ${result.selector}</div>
+        <div>${chrome.i18n.getMessage("foundSimilarElements")}: ${result.elements.length}개</div>
       </div>
     `;
     logArea.appendChild(selectionInfo);
     
     // 상위 요소 선택 버튼 추가
     const parentButton = document.createElement('button');
-    parentButton.textContent = '상위 요소 선택';
+    parentButton.textContent = chrome.i18n.getMessage("selectParentElement");
     parentButton.style.cssText = `
       margin-bottom: 15px;
       padding: 8px;
@@ -265,7 +264,7 @@ function startSelection() {
     `;
     
     filterUI.innerHTML = `
-      <div style="margin-bottom: 10px;">필터링할 텍스트 입력:</div>
+      <div style="margin-bottom: 10px;">${chrome.i18n.getMessage("enterFilterText")}:</div>
       <input type="text" id="filterText" style="
         width: 100%;
         padding: 8px;
@@ -293,7 +292,7 @@ function startSelection() {
 
     // 미리보기 버튼
     const previewButton = document.createElement('button');
-    previewButton.textContent = '미리보기';
+    previewButton.textContent = chrome.i18n.getMessage("preview");
     previewButton.style.cssText = `
       margin-top: 10px;
       padding: 8px;
@@ -325,7 +324,7 @@ function startSelection() {
 
     // 저장 버튼 (처음에는 숨김)
     const saveButton = document.createElement('button');
-    saveButton.textContent = '필터 저장';
+    saveButton.textContent = chrome.i18n.getMessage("saveFilter");
     saveButton.style.cssText = `
       margin-top: 10px;
       padding: 8px;
@@ -355,7 +354,7 @@ function startSelection() {
     previewButton.addEventListener('click', () => {
       const filterText = document.getElementById('filterText').value.trim();
       if (!filterText) {
-        alert('필터링할 텍스트를 입력해주세요.');
+        alert(chrome.i18n.getMessage("pleaseEnterFilterText"));
         return;
       }
       
@@ -366,7 +365,7 @@ function startSelection() {
       // 미리보기 표시
       previewArea.innerHTML = `
         <div style="margin-bottom: 10px;">
-          필터링될 요소: ${filteredElements.length}개
+          ${chrome.i18n.getMessage("elementsFiltered")}: ${filteredElements.length}개
         </div>
       `;
       
@@ -423,7 +422,7 @@ function startSelection() {
           // 성공 메시지 표시
           logArea.innerHTML = `
             <div style="color: #4CAF50;">
-              필터가 성공적으로 저장되었습니다!
+              ${chrome.i18n.getMessage("filterSavedSuccessfully")}
             </div>
           `;
 
@@ -437,7 +436,7 @@ function startSelection() {
           document.removeEventListener('mouseover', handleMouseOver);
           document.removeEventListener('click', handleClick, true);
         } else {
-          throw new Error(response.error || '알 수 없는 오류가 발생했습니다.');
+            throw new Error(response.error || chrome.i18n.getMessage("unknownError"));
         }
       } catch (error) {
         console.error('필터 저장 중 오류:', error);

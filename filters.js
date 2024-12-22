@@ -5,13 +5,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const importBtn = document.getElementById('importBtn');
   const importFile = document.getElementById('importFile');
   
+  exportBtn.textContent = chrome.i18n.getMessage("export");
+  importBtn.textContent = chrome.i18n.getMessage("import");
+  
   async function loadFilters() {
     const { filters = [] } = await chrome.storage.local.get('filters');
     
     if (filters.length === 0) {
       filterList.innerHTML = `
         <div class="no-filters">
-          저장된 필터가 없습니다.
+          ${chrome.i18n.getMessage("noFiltersSaved")}
         </div>
       `;
       return;
@@ -21,15 +24,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       .sort((a, b) => b.timestamp - a.timestamp)
       .map((filter, index) => `
         <div class="filter-item" data-index="${index}">
-          <div><strong>도메인:</strong> ${filter.domain}</div>
-          <div><strong>선택자:</strong> ${filter.selector}</div>
-          <div><strong>필터 텍스트:</strong> ${filter.filterText}</div>
+          <div><strong>${chrome.i18n.getMessage("domain")}:</strong> ${filter.domain}</div>
+          <div><strong>${chrome.i18n.getMessage("selector")}:</strong> ${filter.selector}</div>
+          <div><strong>${chrome.i18n.getMessage("filterText")}:</strong> ${filter.filterText}</div>
           <div class="timestamp">
             ${new Date(filter.timestamp).toLocaleString()}
           </div>
           <div class="filter-share">
-            <button class="share-btn" data-index="${index}">공유</button>
-            <button class="delete-btn" data-index="${index}">삭제</button>
+            <button class="share-btn" data-index="${index}">${chrome.i18n.getMessage("share")}</button>
+            <button class="delete-btn" data-index="${index}">${chrome.i18n.getMessage("delete")}</button>
           </div>
         </div>
       `)
@@ -84,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       importedFilters.forEach(filter => {
         // 필수 필드 확인
         if (!filter.selector || !filter.domain || !filter.filterText) {
-          throw new Error('잘못된 필터 형식입니다.');
+          throw new Error(chrome.i18n.getMessage("invalidFilterFormat"));
         }
         
         const sanitizedFilter = sanitizeFilter(filter);
@@ -103,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       await loadFilters();
       alert(`${importedFilters.length}개의 필터를 가져왔습니다.`);
     } catch (error) {
-      alert('필터 가져오기 실패: ' + error.message);
+      alert(chrome.i18n.getMessage("filterImportFailed") + ': ' + error.message);
     }
     importFile.value = '';
   });
@@ -121,16 +124,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       try {
         await navigator.clipboard.writeText(filterString);
-        alert('필터가 클립보드에 복사되었습니다.');
+        alert(chrome.i18n.getMessage("filterCopiedToClipboard"));
       } catch (error) {
-        console.error('클립보드 복사 실패:', error);
+        console.error(chrome.i18n.getMessage("copyFailed") + ':', error);
         const textarea = document.createElement('textarea');
         textarea.value = filterString;
         document.body.appendChild(textarea);
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-        alert('필터가 클립보드에 복사되었습니다.');
+        alert(chrome.i18n.getMessage("filterCopiedToClipboard"));
       }
     }
   });
@@ -149,7 +152,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // 전체 삭제
   clearAllBtn.addEventListener('click', async () => {
-    if (confirm('모든 필터를 삭제하시겠습니까?')) {
+    if (confirm(chrome.i18n.getMessage("confirmDeleteAllFilters"))) {
       await chrome.storage.local.set({ filters: [] });
       await loadFilters();
     }
@@ -157,4 +160,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // 초기 로드
   loadFilters();
+  
+  // 제목 설정
+  document.getElementById('savedFilterListTitle').textContent = chrome.i18n.getMessage("savedFilterList");
+  
+  // 버튼 텍스트 설정
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+    const messageName = element.getAttribute('data-i18n');
+    element.textContent = chrome.i18n.getMessage(messageName);
+  });
 }); 

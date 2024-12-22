@@ -1,0 +1,86 @@
+{
+  "description": {
+    "message" : "Safespace is a Chrome extension that helps users protect themselves from unwanted content."
+  },
+  "selectParentElement": {
+    "message": "Select Parent Element"
+  },
+  "preview": {
+    "message": "Preview"
+  },
+  "saveFilter": {
+    "message": "Save Filter"
+  },
+  "selectedElement": {
+    "message": "Selected Element"
+  },
+  "similarElementsFound": {
+    "message": "Similar Elements Found"
+  },
+  "viewFilterList": {
+    "message": "View Filter List"
+  },
+  "domain": {
+    "message": "Domain"
+  },
+  "export": {
+    "message": "Export"
+  },
+  "import": {
+    "message": "Import"
+  },
+  "deleteAll": {
+    "message": "Delete All"
+  },
+  "savedFilterList": {
+    "message": "Saved Filter List"
+  },
+  "noFiltersSaved": {
+    "message": "No filters saved"
+  },
+  "selector": {
+    "message": "Selector"
+  },
+  "filterText": {
+    "message": "Filter Text"
+  },
+  "share": {
+    "message": "Share"
+  },
+  "delete": {
+    "message": "Delete"
+  },
+  "invalidFilterFormat": {
+    "message": "Invalid filter format"
+  },
+  "filterImportFailed": {
+    "message": "Filter import failed"
+  },
+  "filterCopiedToClipboard": {
+    "message": "Filter copied to clipboard"
+  },
+  "copyFailed": {
+    "message": "Copy failed"
+  },
+  "confirmDeleteAllFilters": {
+    "message": "Are you sure you want to delete all filters?"
+  },
+  "enterFilterText": {
+    "message": "Enter text to filter"
+  },
+  "pleaseEnterFilterText": {
+    "message": "Please enter filter text"
+  },
+  "elementsFiltered": {
+    "message": "Elements filtered"
+  },
+  "filterSavedSuccessfully": {
+    "message": "Filter saved successfully"
+  },
+  "unknownError": {
+    "message": "Unknown error"
+  },
+  "startSelection": {
+    "message": "Start Element Selection"
+  }
+} 

@@ -1,0 +1,86 @@
+{
+  "description": {
+    "message" : "Safespace 是一个 Chrome 扩展程序，帮助用户保护自己免受不必要的内容。"
+  },
+  "selectParentElement": {
+    "message": "选择父元素"
+  },
+  "preview": {
+    "message": "预览"
+  },
+  "saveFilter": {
+    "message": "保存过滤器"
+  },
+  "selectedElement": {
+    "message": "已选择元素"
+  },
+  "similarElementsFound": {
+    "message": "发现相似元素"
+  },
+  "viewFilterList": {
+    "message": "查看过滤器列表"
+  },
+  "domain": {
+    "message": "域名"
+  },
+  "export": {
+    "message": "导出"
+  },
+  "import": {
+    "message": "导入"
+  },
+  "deleteAll": {
+    "message": "删除全部"
+  },
+  "savedFilterList": {
+    "message": "已保存的过滤器列表"
+  },
+  "noFiltersSaved": {
+    "message": "没有保存的过滤器"
+  },
+  "selector": {
+    "message": "选择器"
+  },
+  "filterText": {
+    "message": "过滤文本"
+  },
+  "share": {
+    "message": "分享"
+  },
+  "delete": {
+    "message": "删除"
+  },
+  "invalidFilterFormat": {
+    "message": "无效的过滤器格式"
+  },
+  "filterImportFailed": {
+    "message": "过滤器导入失败"
+  },
+  "filterCopiedToClipboard": {
+    "message": "过滤器已复制到剪贴板"
+  },
+  "copyFailed": {
+    "message": "复制失败"
+  },
+  "confirmDeleteAllFilters": {
+    "message": "确定要删除所有过滤器吗？"
+  },
+  "enterFilterText": {
+    "message": "输入要过滤的文本"
+  },
+  "pleaseEnterFilterText": {
+    "message": "请输入过滤文本"
+  },
+  "elementsFiltered": {
+    "message": "已过滤元素"
+  },
+  "filterSavedSuccessfully": {
+    "message": "过滤器保存成功"
+  },
+  "unknownError": {
+    "message": "未知错误"
+  },
+  "startSelection": {
+    "message": "开始选择元素"
+  }
+} 

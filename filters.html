@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <script src="filters.js"></script>
   <style>
     body {
       width: 800px;
@@ -121,16 +122,15 @@
 <body>
   <div class="container">
     <div class="header">
-      <h2>저장된 필터 목록</h2>
+      <h2 id="savedFilterListTitle"></h2>
       <div class="header-buttons">
-        <button id="exportBtn" class="import-export-btn export-btn">내보내기</button>
-        <button id="importBtn" class="import-export-btn import-btn">가져오기</button>
-        <button id="clearAll" class="import-export-btn clear-btn">전체 삭제</button>
+        <button id="exportBtn" class="import-export-btn export-btn" data-i18n="export"></button>
+        <button id="importBtn" class="import-export-btn import-btn" data-i18n="import"></button>
+        <button id="clearAll" class="import-export-btn clear-btn" data-i18n="deleteAll"></button>
       </div>
     </div>
     <div id="filterList"></div>
   </div>
   <input type="file" id="importFile" accept=".json" style="display: none;">
-  <script src="filters.js"></script>
 </body>
 </html> 

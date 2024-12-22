@@ -1,0 +1,86 @@
+{
+  "description": {
+    "message" : "Safespace는 사용자가 불필요한 콘텐츠로부터 보호하는 데 도움을 주는 Chrome 확장 프로그램입니다."
+  },
+  "selectParentElement": {
+    "message": "상위 요소 선택"
+  },
+  "preview": {
+    "message": "미리보기"
+  },
+  "saveFilter": {
+    "message": "필터 저장"
+  },
+  "selectedElement": {
+    "message": "선택된 요소"
+  },
+  "similarElementsFound": {
+    "message": "발견된 비슷한 요소"
+  },
+  "viewFilterList": {
+    "message": "필터 목록보기"
+  },
+  "domain": {
+    "message": "도메인"
+  },
+  "export": {
+    "message": "내보내기"
+  },
+  "import": {
+    "message": "가져오기"
+  },
+  "deleteAll": {
+    "message": "전체 삭제"
+  },
+  "savedFilterList": {
+    "message": "저장된 필터 목록"
+  },
+  "noFiltersSaved": {
+    "message": "저장된 필터가 없습니다"
+  },
+  "selector": {
+    "message": "선택자"
+  },
+  "filterText": {
+    "message": "필터 텍스트"
+  },
+  "share": {
+    "message": "공유"
+  },
+  "delete": {
+    "message": "삭제"
+  },
+  "invalidFilterFormat": {
+    "message": "잘못된 필터 형식입니다"
+  },
+  "filterImportFailed": {
+    "message": "필터 가져오기 실패"
+  },
+  "filterCopiedToClipboard": {
+    "message": "필터가 클립보드에 복사되었습니다"
+  },
+  "copyFailed": {
+    "message": "복사 실패"
+  },
+  "confirmDeleteAllFilters": {
+    "message": "모든 필터를 삭제하시겠습니까?"
+  },
+  "enterFilterText": {
+    "message": "필터링할 텍스트 입력"
+  },
+  "pleaseEnterFilterText": {
+    "message": "필터 텍스트를 입력해주세요"
+  },
+  "elementsFiltered": {
+    "message": "필터링된 요소"
+  },
+  "filterSavedSuccessfully": {
+    "message": "필터가 성공적으로 저장되었습니다"
+  },
+  "unknownError": {
+    "message": "알 수 없는 오류"
+  },
+  "startSelection": {
+    "message": "요소 선택 시작"
+  }
+} 
