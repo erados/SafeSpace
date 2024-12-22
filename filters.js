@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.target.classList.contains('share-btn')) {
       const index = parseInt(e.target.dataset.index);
       const { filters = [] } = await chrome.storage.local.get('filters');
+      filters.sort((a, b) => b.timestamp - a.timestamp);
       const filter = filters[index];
       
       // 필수 필드만 포함하여 공유
