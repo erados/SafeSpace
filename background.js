@@ -153,9 +153,9 @@ function startSelection() {
     let current = element;
     
     while (current && current !== document.body) {
-      let identifier = current.tagName.toLowerCase();
+      let identifier = `${current.tagName.toLowerCase()}[class*='`;
       if (current.className && typeof current.className === 'string' && current.className.trim()) {
-        identifier += '.' + current.className.trim().split(/\s+/).join('.');
+        identifier += `${current.className.trim().split(/\s+/).join(' ')}']`;
       }
       path.unshift(identifier);
       current = current.parentElement;
