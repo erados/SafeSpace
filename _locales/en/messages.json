@@ -82,5 +82,17 @@
   },
   "startSelection": {
     "message": "Start Element Selection"
+  },
+  "filtersImported": {
+    "message": "Imported $1 filters",
+    "description": "Filter import success message"
+  },
+  "activeFiltersCount": {
+    "message": "Active filters: $1",
+    "description": "Display the number of currently active filters"
+  },
+  "startElementSelection": {
+    "message": "Start Element Selection",
+    "description": "Start element selection mode message"
   }
 } 

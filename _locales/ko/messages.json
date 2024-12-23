@@ -82,5 +82,17 @@
   },
   "startSelection": {
     "message": "요소 선택 시작"
+  },
+  "filtersImported": {
+    "message": "$1개의 필터를 가져왔습니다.",
+    "description": "필터 가져오기 성공 메시지"
+  },
+  "activeFiltersCount": {
+    "message": "활성 필터: $1개",
+    "description": "현재 활성화된 필터 수를 표시"
+  },
+    "startElementSelection": {
+      "message": "요소 선택 시작",
+    "description": "요소 선택 모드 시작 메시지"
   }
 } 

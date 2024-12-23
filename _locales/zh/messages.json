@@ -82,5 +82,17 @@
   },
   "startSelection": {
     "message": "开始选择元素"
+  },
+  "filtersImported": {
+    "message": "导入 $1 个过滤器",
+    "description": "过滤器导入成功消息"
+  },
+  "activeFiltersCount": {
+    "message": "Active filters: $1",
+    "description": "Display the number of currently active filters"
+  },
+  "startElementSelection": {
+    "message": "Start Element Selection",
+    "description": "Start element selection mode message"
   }
 } 

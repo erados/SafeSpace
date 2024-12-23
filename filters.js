@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       await chrome.storage.local.set({ filters: newFilters });
       await loadFilters();
-      alert(`${importedFilters.length}개의 필터를 가져왔습니다.`);
+      alert(chrome.i18n.getMessage("filtersImported", [importedFilters.length]));
     } catch (error) {
       alert(chrome.i18n.getMessage("filterImportFailed") + ': ' + error.message);
     }

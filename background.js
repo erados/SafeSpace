@@ -89,7 +89,7 @@ async function updateFilterBadge(tabId) {
         tabId: tabId
       });
       await chrome.action.setTitle({ 
-        title: `활성 필터: ${domainFilters.length}개`,
+        title: chrome.i18n.getMessage("activeFiltersCount", [domainFilters.length.toString()]),
         tabId: tabId
       });
     } else {
@@ -98,7 +98,7 @@ async function updateFilterBadge(tabId) {
         tabId: tabId
       });
       await chrome.action.setTitle({ 
-        title: '요소 선택 시작',
+        title: chrome.i18n.getMessage("startElementSelection"),
         tabId: tabId
       });
     }
@@ -188,7 +188,7 @@ function startSelection() {
     logElement.style.marginBottom = '10px';
     logElement.innerHTML = `
       <div>${chrome.i18n.getMessage("selectedElement")}: ${result.selector}</div>
-      <div>${chrome.i18n.getMessage("foundSimilarElements")}: ${result.elements.length}개</div>
+      <div>${chrome.i18n.getMessage("foundSimilarElements")}: ${result.elements.length}</div>
     `;
     logArea.appendChild(logElement);
   }
@@ -201,7 +201,7 @@ function startSelection() {
     selectionInfo.innerHTML = `
       <div style="margin-bottom: 15px;">
         <div>${chrome.i18n.getMessage("selectedElement")}: ${result.selector}</div>
-        <div>${chrome.i18n.getMessage("foundSimilarElements")}: ${result.elements.length}개</div>
+        <div>${chrome.i18n.getMessage("foundSimilarElements")}: ${result.elements.length}</div>
       </div>
     `;
     logArea.appendChild(selectionInfo);
@@ -365,7 +365,7 @@ function startSelection() {
       // 미리보기 표시
       previewArea.innerHTML = `
         <div style="margin-bottom: 10px;">
-          ${chrome.i18n.getMessage("elementsFiltered")}: ${filteredElements.length}개
+          ${chrome.i18n.getMessage("elementsFiltered")}: ${filteredElements.length}
         </div>
       `;
       
