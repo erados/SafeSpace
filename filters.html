@@ -2,135 +2,369 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <script src="filters.js"></script>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      width: 800px;
-      margin: 20px auto;
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      max-width: 900px;
+      margin: 0 auto;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      padding: 24px;
+      line-height: 1.5;
     }
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .filter-item {
-      padding: 15px;
-      margin: 10px 0;
-      border: 1px solid #eee;
-      border-radius: 4px;
-      position: relative;
-    }
-    .filter-item:hover {
-      background: #f8f8f8;
-    }
-    .delete-btn {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #ff4444;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .delete-btn:hover {
-      background: #cc0000;
-    }
-    .no-filters {
-      text-align: center;
-      color: #666;
-      padding: 20px;
-    }
+
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-    }
-    .timestamp {
-      color: #666;
-      font-size: 0.9em;
-    }
-    .header-buttons {
-      display: flex;
-      gap: 10px;
-    }
-    
-    .import-export-btn {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: background-color 0.2s;
-    }
-    
-    .export-btn {
-      background: #2196F3;
-      color: white;
-    }
-    
-    .export-btn:hover {
-      background: #1976D2;
-    }
-    
-    .import-btn {
-      background: #4CAF50;
-      color: white;
-    }
-    
-    .import-btn:hover {
-      background: #388E3C;
-    }
-    
-    .clear-btn {
-      background: #ff4444;
-      color: white;
-    }
-    
-    .clear-btn:hover {
-      background: #cc0000;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
-    .filter-share {
-      margin-top: 5px;
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
       display: flex;
+      align-items: center;
       gap: 10px;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-export { background: #2196F3; color: white; }
+    .btn-export:hover { background: #1976D2; }
+    .btn-import { background: #4CAF50; color: white; }
+    .btn-import:hover { background: #388E3C; }
+    .btn-danger { background: #f44336; color: white; }
+    .btn-danger:hover { background: #d32f2f; }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
       align-items: center;
     }
 
-    .share-btn {
-      background: #9C27B0;
-      color: white;
-      padding: 4px 8px;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 12px;
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      color: #e0e0e0;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
     }
 
-    .share-btn:hover {
-      background: #7B1FA2;
+    .search-box:focus {
+      border-color: #7c83ff;
     }
+
+    .search-box::placeholder {
+      color: #666;
+    }
+
+    .sort-select {
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      color: #e0e0e0;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .sort-select option {
+      background: #1a1a2e;
+      color: #e0e0e0;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #888;
+    }
+
+    .stats-bar span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stats-bar strong {
+      color: #7c83ff;
+    }
+
+    .domain-group {
+      margin-bottom: 16px;
+    }
+
+    .domain-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(124,131,255,0.08);
+      border-radius: 8px 8px 0 0;
+      border: 1px solid rgba(124,131,255,0.15);
+      border-bottom: none;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .domain-header:hover {
+      background: rgba(124,131,255,0.12);
+    }
+
+    .domain-name {
+      font-weight: 600;
+      color: #7c83ff;
+      font-size: 14px;
+    }
+
+    .domain-count {
+      font-size: 11px;
+      background: rgba(124,131,255,0.2);
+      color: #aab;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .domain-arrow {
+      margin-left: auto;
+      transition: transform 0.2s;
+      color: #666;
+    }
+
+    .domain-arrow.collapsed {
+      transform: rotate(-90deg);
+    }
+
+    .domain-filters {
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+    }
+
+    .domain-filters.collapsed {
+      display: none;
+    }
+
+    .filter-item {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: background 0.15s;
+    }
+
+    .filter-item:last-child {
+      border-bottom: none;
+    }
+
+    .filter-item:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .filter-item.disabled {
+      opacity: 0.45;
+    }
+
+    .filter-toggle {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .filter-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .filter-toggle .slider {
+      position: absolute;
+      inset: 0;
+      background: #444;
+      border-radius: 20px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .filter-toggle .slider::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .filter-toggle input:checked + .slider {
+      background: #4CAF50;
+    }
+
+    .filter-toggle input:checked + .slider::before {
+      transform: translateX(16px);
+    }
+
+    .filter-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .filter-text-display {
+      font-weight: 500;
+      color: #e0e0e0;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .filter-meta {
+      font-size: 11px;
+      color: #666;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-meta code {
+      background: rgba(255,255,255,0.06);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 10px;
+      color: #888;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .filter-actions button {
+      padding: 4px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background 0.2s;
+    }
+
+    .share-btn {
+      background: rgba(156,39,176,0.2);
+      color: #ce93d8;
+    }
+    .share-btn:hover {
+      background: rgba(156,39,176,0.35);
+    }
+
+    .delete-btn {
+      background: rgba(244,67,54,0.15);
+      color: #ef9a9a;
+    }
+    .delete-btn:hover {
+      background: rgba(244,67,54,0.3);
+    }
+
+    .no-filters {
+      text-align: center;
+      color: #555;
+      padding: 60px 20px;
+      font-size: 15px;
+    }
+
+    .no-filters .emoji {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #333;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      transition: transform 0.3s ease;
+      z-index: 10000;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.success { border-left: 3px solid #4CAF50; }
+    .toast.error { border-left: 3px solid #f44336; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h2 id="savedFilterListTitle"></h2>
-      <div class="header-buttons">
-        <button id="exportBtn" class="import-export-btn export-btn" data-i18n="export"></button>
-        <button id="importBtn" class="import-export-btn import-btn" data-i18n="import"></button>
-        <button id="clearAll" class="import-export-btn clear-btn" data-i18n="deleteAll"></button>
-      </div>
+  <div class="header">
+    <h1>🛡️ <span id="savedFilterListTitle">Saved Filters</span></h1>
+    <div class="header-buttons">
+      <button id="exportBtn" class="btn btn-export">Export</button>
+      <button id="importBtn" class="btn btn-import">Import</button>
+      <button id="clearAll" class="btn btn-danger">Delete All</button>
     </div>
-    <div id="filterList"></div>
   </div>
+
+  <div class="toolbar">
+    <input type="text" id="searchBox" class="search-box" placeholder="Search filters...">
+    <select id="sortSelect" class="sort-select">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="domain">By domain</option>
+      <option value="text">By filter text</option>
+    </select>
+  </div>
+
+  <div class="stats-bar" id="statsBar">
+    <span>Total: <strong id="statTotal">0</strong></span>
+    <span>Active: <strong id="statActive">0</strong></span>
+    <span>Domains: <strong id="statDomains">0</strong></span>
+  </div>
+
+  <div id="filterList"></div>
   <input type="file" id="importFile" accept=".json" style="display: none;">
+
+  <div id="toast" class="toast"></div>
+
+  <script src="filters.js"></script>
 </body>
-</html> 
+</html>

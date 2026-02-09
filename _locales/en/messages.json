@@ -1,6 +1,6 @@
 {
   "description": {
-    "message" : "Safespace is a Chrome extension that helps users protect themselves from unwanted content."
+    "message": "SafeSpace helps you hide unwanted content on any webpage by filtering text-matching elements."
   },
   "selectParentElement": {
     "message": "Select Parent Element"
@@ -33,10 +33,10 @@
     "message": "Delete All"
   },
   "savedFilterList": {
-    "message": "Saved Filter List"
+    "message": "Saved Filters"
   },
   "noFiltersSaved": {
-    "message": "No filters saved"
+    "message": "No filters saved yet. Click the SafeSpace icon on any page to start!"
   },
   "selector": {
     "message": "Selector"
@@ -57,7 +57,7 @@
     "message": "Filter import failed"
   },
   "filterCopiedToClipboard": {
-    "message": "Filter copied to clipboard"
+    "message": "Filter copied to clipboard!"
   },
   "copyFailed": {
     "message": "Copy failed"
@@ -75,7 +75,7 @@
     "message": "Elements filtered"
   },
   "filterSavedSuccessfully": {
-    "message": "Filter saved successfully"
+    "message": "Filter saved successfully!"
   },
   "unknownError": {
     "message": "Unknown error"
@@ -84,15 +84,51 @@
     "message": "Start Element Selection"
   },
   "filtersImported": {
-    "message": "Imported $1 filters",
-    "description": "Filter import success message"
+    "message": "Imported $1 filter(s)",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   },
   "activeFiltersCount": {
     "message": "Active filters: $1",
-    "description": "Display the number of currently active filters"
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   },
   "startElementSelection": {
-    "message": "Start Element Selection",
-    "description": "Start element selection mode message"
+    "message": "Select Element"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "selectionInstructions": {
+    "message": "Click on any element to select it. Similar elements will be highlighted."
+  },
+  "searchFilters": {
+    "message": "Search filters..."
+  },
+  "noSearchResults": {
+    "message": "No filters match your search"
+  },
+  "filterDeleted": {
+    "message": "Filter deleted"
+  },
+  "allFiltersDeleted": {
+    "message": "All filters deleted"
+  },
+  "popupTotalFilters": {
+    "message": "Total Filters"
+  },
+  "popupThisSite": {
+    "message": "This Site"
+  },
+  "popupHidden": {
+    "message": "Hidden"
+  },
+  "popupEnableFilters": {
+    "message": "Enable Filters"
+  },
+  "popupManageFilters": {
+    "message": "Manage Filters"
   }
-} 
+}

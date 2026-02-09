@@ -1,6 +1,6 @@
 {
   "description": {
-    "message" : "Safespace 是一个 Chrome 扩展程序，帮助用户保护自己免受不必要的内容。"
+    "message": "SafeSpace 是一款 Chrome 扩展程序，通过文本匹配帮助您隐藏网页上不想看到的内容。"
   },
   "selectParentElement": {
     "message": "选择父元素"
@@ -12,7 +12,7 @@
     "message": "保存过滤器"
   },
   "selectedElement": {
-    "message": "已选择元素"
+    "message": "已选元素"
   },
   "similarElementsFound": {
     "message": "发现相似元素"
@@ -30,13 +30,13 @@
     "message": "导入"
   },
   "deleteAll": {
-    "message": "删除全部"
+    "message": "全部删除"
   },
   "savedFilterList": {
-    "message": "已保存的过滤器列表"
+    "message": "已保存的过滤器"
   },
   "noFiltersSaved": {
-    "message": "没有保存的过滤器"
+    "message": "暂无保存的过滤器。在任意页面点击 SafeSpace 图标开始使用！"
   },
   "selector": {
     "message": "选择器"
@@ -57,7 +57,7 @@
     "message": "过滤器导入失败"
   },
   "filterCopiedToClipboard": {
-    "message": "过滤器已复制到剪贴板"
+    "message": "过滤器已复制到剪贴板！"
   },
   "copyFailed": {
     "message": "复制失败"
@@ -75,7 +75,7 @@
     "message": "已过滤元素"
   },
   "filterSavedSuccessfully": {
-    "message": "过滤器保存成功"
+    "message": "过滤器保存成功！"
   },
   "unknownError": {
     "message": "未知错误"
@@ -84,15 +84,51 @@
     "message": "开始选择元素"
   },
   "filtersImported": {
-    "message": "导入 $1 个过滤器",
-    "description": "过滤器导入成功消息"
+    "message": "已导入 $1 个过滤器",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   },
   "activeFiltersCount": {
-    "message": "Active filters: $1",
-    "description": "Display the number of currently active filters"
+    "message": "活跃过滤器：$1",
+    "placeholders": {
+      "count": { "content": "$1" }
+    }
   },
   "startElementSelection": {
-    "message": "Start Element Selection",
-    "description": "Start element selection mode message"
+    "message": "选择元素"
+  },
+  "cancel": {
+    "message": "取消"
+  },
+  "selectionInstructions": {
+    "message": "点击任意元素进行选择，相似元素将被高亮显示。"
+  },
+  "searchFilters": {
+    "message": "搜索过滤器..."
+  },
+  "noSearchResults": {
+    "message": "没有匹配的过滤器"
+  },
+  "filterDeleted": {
+    "message": "过滤器已删除"
+  },
+  "allFiltersDeleted": {
+    "message": "所有过滤器已删除"
+  },
+  "popupTotalFilters": {
+    "message": "总过滤器"
+  },
+  "popupThisSite": {
+    "message": "本站"
+  },
+  "popupHidden": {
+    "message": "已隐藏"
+  },
+  "popupEnableFilters": {
+    "message": "启用过滤器"
+  },
+  "popupManageFilters": {
+    "message": "管理过滤器"
   }
-} 
+}

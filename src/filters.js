@@ -1,89 +1,85 @@
 async function saveFilter(filter) {
   try {
     const { filters = [] } = await chrome.storage.local.get('filters');
-    filters.push(filter);
+    // Don't persist tabId
+    const { tabId, ...cleanFilter } = filter;
+    cleanFilter.enabled = true;
+    filters.push(cleanFilter);
     await chrome.storage.local.set({ filters });
-    
-    // 필터 저장 후 즉시 적용
-    await applyNewFilter(filter);
-    
+
+    // Apply immediately if tabId available
+    if (tabId) {
+      await applyNewFilter({ ...cleanFilter, tabId });
+    }
     return true;
   } catch (error) {
-    throw new Error('필터 저장 중 오류가 발생했습니다: ' + error.message);
+    throw new Error('Filter save error: ' + error.message);
   }
 }
 
-
-// 필터 적용 함수
 function applyFilters(filters) {
-  // 기존 테두리 모두 제거
-  document.querySelectorAll('[style*="outline"]').forEach(el => {
-    el.style.outline = '';
-  });
-  document.querySelectorAll('[data-highlight]').forEach(el => {
-    el.removeAttribute('data-highlight');
+  // Clean up previous state
+  document.querySelectorAll('[data-safespace-hidden]').forEach(el => {
+    el.style.display = '';
+    el.removeAttribute('data-safespace-hidden');
   });
 
-  // Remove any previously injected safespace style element
-  const oldStyle = document.getElementById('safespace-filters');
-  if (oldStyle) oldStyle.remove();
-
-  // Disconnect any existing SafeSpace observer
   if (window.__safespaceObserver) {
     window.__safespaceObserver.disconnect();
     window.__safespaceObserver = null;
   }
 
-  // JS-based text matching to hide elements (no CSS :contains())
-  filters.forEach(filter => {
-    const elements = document.querySelectorAll(filter.selector);
-    elements.forEach(element => {
-      if (element.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
-        element.style.display = 'none';
-      }
-    });
+  // Only apply enabled filters
+  const activeFilters = filters.filter(f => f.enabled !== false);
+  if (activeFilters.length === 0) return { filterCount: 0 };
+
+  // Apply filters
+  activeFilters.forEach(filter => {
+    try {
+      const elements = document.querySelectorAll(filter.selector);
+      elements.forEach(element => {
+        if (element.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
+          element.style.display = 'none';
+          element.setAttribute('data-safespace-hidden', 'true');
+        }
+      });
+    } catch (e) {
+      console.warn('SafeSpace: invalid selector', filter.selector, e);
+    }
   });
-  
-  // 새로운 요소에 대한 감시 (single observer for all filters)
+
+  // Single observer for all filters
   const observer = new MutationObserver((mutations) => {
-    mutations.forEach(mutation => {
-      mutation.addedNodes.forEach(node => {
-        if (node.nodeType === 1) { // 요소 노드인 경우
-          filters.forEach(filter => {
-            if (node.matches && node.matches(filter.selector) && 
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType !== 1) continue;
+        activeFilters.forEach(filter => {
+          try {
+            if (node.matches && node.matches(filter.selector) &&
                 node.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
               node.style.display = 'none';
+              node.setAttribute('data-safespace-hidden', 'true');
             }
-            // Also check descendants of added nodes
             if (node.querySelectorAll) {
               node.querySelectorAll(filter.selector).forEach(child => {
                 if (child.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
                   child.style.display = 'none';
+                  child.setAttribute('data-safespace-hidden', 'true');
                 }
               });
             }
-          });
-        }
-      });
-    });
-  });
-  
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
+          } catch (e) { /* invalid selector */ }
+        });
+      }
+    }
   });
 
-  // Store observer reference for cleanup
+  observer.observe(document.body, { childList: true, subtree: true });
   window.__safespaceObserver = observer;
-  
-  // 필터 적용 상태 반환
-  return {
-    filterCount: filters.length,
-    appliedAt: new Date().toISOString()
-  };
+
+  return { filterCount: activeFilters.length, appliedAt: new Date().toISOString() };
 }
 
-// 필터 저장 후 즉시 적용하는 함수 추가
 function applyNewFilter(filter) {
   return chrome.scripting.executeScript({
     target: { tabId: filter.tabId },
@@ -92,34 +88,37 @@ function applyNewFilter(filter) {
   });
 }
 
-// 페이지에서 실행될 필터 적용 함수
 function applyFilterToPage(filter) {
-  const elements = document.querySelectorAll(filter.selector);
-  elements.forEach(element => {
-    if (element.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
-      element.style.display = 'none';
-    }
-  });
-  
-  // Reuse existing observer if available, otherwise create one
+  if (filter.enabled === false) return true;
+
+  try {
+    const elements = document.querySelectorAll(filter.selector);
+    elements.forEach(element => {
+      if (element.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
+        element.style.display = 'none';
+        element.setAttribute('data-safespace-hidden', 'true');
+      }
+    });
+  } catch (e) {
+    console.warn('SafeSpace: invalid selector', filter.selector, e);
+  }
+
   if (!window.__safespaceObserver) {
     const observer = new MutationObserver((mutations) => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-          if (node.nodeType === 1 && node.matches && node.matches(filter.selector)) {
-            if (node.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node.nodeType !== 1) continue;
+          try {
+            if (node.matches && node.matches(filter.selector) &&
+                node.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
               node.style.display = 'none';
+              node.setAttribute('data-safespace-hidden', 'true');
             }
-          }
-        });
-      });
+          } catch (e) { /* ignore */ }
+        }
+      }
     });
-    
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-
+    observer.observe(document.body, { childList: true, subtree: true });
     window.__safespaceObserver = observer;
   }
 

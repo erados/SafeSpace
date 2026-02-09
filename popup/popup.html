@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="popup-header">
+      <img src="../images/icon-32.png" alt="SafeSpace" class="popup-logo">
+      <h1>SafeSpace</h1>
+    </div>
+
+    <div class="popup-stats" id="stats">
+      <div class="stat-item">
+        <span class="stat-number" id="totalFilters">0</span>
+        <span class="stat-label" id="totalFiltersLabel">Total Filters</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="domainFilters">0</span>
+        <span class="stat-label" id="domainFiltersLabel">This Site</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="hiddenCount">0</span>
+        <span class="stat-label" id="hiddenCountLabel">Hidden</span>
+      </div>
+    </div>
+
+    <div class="popup-toggle">
+      <label class="toggle-row" for="globalToggle">
+        <span id="enableFiltersLabel">Enable Filters</span>
+        <div class="toggle-switch">
+          <input type="checkbox" id="globalToggle" checked>
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+    </div>
+
+    <div class="popup-actions">
+      <button id="selectBtn" class="action-btn primary-btn">
+        <span class="btn-icon">🎯</span>
+        <span id="selectBtnLabel">Select Element</span>
+      </button>
+      <button id="manageBtn" class="action-btn secondary-btn">
+        <span class="btn-icon">⚙️</span>
+        <span id="manageBtnLabel">Manage Filters</span>
+      </button>
+    </div>
+
+    <div id="statusMessage" class="status-message hidden"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
