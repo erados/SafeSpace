@@ -24,23 +24,17 @@ function applyFilters(filters) {
     el.removeAttribute('data-highlight');
   });
 
-  // CSS 스타일 생성
-  const style = document.createElement('style');
-  style.id = 'safespace-filters';
-  
-  // 각 필에 대한 CSS 규칙 생성
-  const cssRules = filters.map(filter => {
-    return `
-      ${filter.selector}:has(:contains("${filter.filterText}")) {
-        display: none !important;
-      }
-    `;
-  }).join('\n');
-  
-  style.textContent = cssRules;
-  document.head.appendChild(style);
-  
-  // 텍스트 노드를 포함한 요소 찾기 및 숨기기
+  // Remove any previously injected safespace style element
+  const oldStyle = document.getElementById('safespace-filters');
+  if (oldStyle) oldStyle.remove();
+
+  // Disconnect any existing SafeSpace observer
+  if (window.__safespaceObserver) {
+    window.__safespaceObserver.disconnect();
+    window.__safespaceObserver = null;
+  }
+
+  // JS-based text matching to hide elements (no CSS :contains())
   filters.forEach(filter => {
     const elements = document.querySelectorAll(filter.selector);
     elements.forEach(element => {
@@ -50,15 +44,23 @@ function applyFilters(filters) {
     });
   });
   
-  // 새로운 요소에 대한 감시
+  // 새로운 요소에 대한 감시 (single observer for all filters)
   const observer = new MutationObserver((mutations) => {
     mutations.forEach(mutation => {
       mutation.addedNodes.forEach(node => {
         if (node.nodeType === 1) { // 요소 노드인 경우
           filters.forEach(filter => {
-            if (node.matches(filter.selector) && 
+            if (node.matches && node.matches(filter.selector) && 
                 node.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
               node.style.display = 'none';
+            }
+            // Also check descendants of added nodes
+            if (node.querySelectorAll) {
+              node.querySelectorAll(filter.selector).forEach(child => {
+                if (child.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
+                  child.style.display = 'none';
+                }
+              });
             }
           });
         }
@@ -70,6 +72,9 @@ function applyFilters(filters) {
     childList: true,
     subtree: true
   });
+
+  // Store observer reference for cleanup
+  window.__safespaceObserver = observer;
   
   // 필터 적용 상태 반환
   return {
@@ -96,23 +101,27 @@ function applyFilterToPage(filter) {
     }
   });
   
-  // 동적 콘텐츠를 위한 옵저버 설정
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach(mutation => {
-      mutation.addedNodes.forEach(node => {
-        if (node.nodeType === 1 && node.matches(filter.selector)) {
-          if (node.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
-            node.style.display = 'none';
+  // Reuse existing observer if available, otherwise create one
+  if (!window.__safespaceObserver) {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === 1 && node.matches && node.matches(filter.selector)) {
+            if (node.textContent.toLowerCase().includes(filter.filterText.toLowerCase())) {
+              node.style.display = 'none';
+            }
           }
-        }
+        });
       });
     });
-  });
-  
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    window.__safespaceObserver = observer;
+  }
 
   return true;
 }

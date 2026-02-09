@@ -1,3 +1,6 @@
+// Store event handler references globally so cleanupSelection() can access them
+window.__safespaceHandlers = window.__safespaceHandlers || {};
+
 function startSelection() {
   // UI 컨테이너 생성
   const uiContainer = document.createElement('div');
@@ -64,7 +67,7 @@ function startSelection() {
     logElement.style.marginBottom = '10px';
     logElement.innerHTML = `
       <div>${chrome.i18n.getMessage("selectedElement")}: ${result.selector}</div>
-      <div>${chrome.i18n.getMessage("foundSimilarElements")}: ${result.elements.length}</div>
+      <div>${chrome.i18n.getMessage("similarElementsFound")}: ${result.elements.length}</div>
     `;
     logArea.appendChild(logElement);
   }
@@ -77,7 +80,7 @@ function startSelection() {
     selectionInfo.innerHTML = `
       <div style="margin-bottom: 15px;">
         <div>${chrome.i18n.getMessage("selectedElement")}: ${result.selector}</div>
-        <div>${chrome.i18n.getMessage("foundSimilarElements")}: ${result.elements.length}</div>
+        <div>${chrome.i18n.getMessage("similarElementsFound")}: ${result.elements.length}</div>
       </div>
     `;
     logArea.appendChild(selectionInfo);
@@ -367,6 +370,10 @@ function startSelection() {
   // 이벤트 리스너 등록
   document.addEventListener('mouseover', handleMouseOver);
   document.addEventListener('click', handleClick, true);
+
+  // Store references globally for cleanupSelection()
+  window.__safespaceHandlers.handleMouseOver = handleMouseOver;
+  window.__safespaceHandlers.handleClick = handleClick;
   
   // ESC 키 처리 수정
   document.addEventListener('keydown', async function(e) {
@@ -441,7 +448,13 @@ function cleanupSelection() {
     uiContainer.remove();
   }
 
-  // 이벤트 리스너 제거 (startSelection 함수에서 추가된 것들)
-  document.removeEventListener('mouseover', handleMouseOver);
-  document.removeEventListener('click', handleClick, true);
+  // 이벤트 리스너 제거 (globally stored references from startSelection)
+  const handlers = window.__safespaceHandlers || {};
+  if (handlers.handleMouseOver) {
+    document.removeEventListener('mouseover', handlers.handleMouseOver);
+  }
+  if (handlers.handleClick) {
+    document.removeEventListener('click', handlers.handleClick, true);
+  }
+  window.__safespaceHandlers = {};
 }
