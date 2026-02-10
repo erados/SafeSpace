@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SafeSpace",
   "description": "__MSG_description__",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "default_locale": "en",
   "permissions": [
     "storage",
@@ -28,6 +28,13 @@
     "default_popup": "popup/popup.html"
   },
   "options_page": "filters.html",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["src/early-filter.js"],
+      "run_at": "document_start"
+    }
+  ],
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",

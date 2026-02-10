@@ -1,7 +1,8 @@
-// Store event handler references globally so cleanupSelection() can access them
-window.__safespaceHandlers = window.__safespaceHandlers || {};
+// Event handler references are initialized inside startSelection() and cleanupSelection()
+// since this file is loaded via importScripts in the service worker (no window object).
 
 function startSelection() {
+  window.__safespaceHandlers = window.__safespaceHandlers || {};
   // UI container
   const uiContainer = document.createElement('div');
   uiContainer.id = 'safespace-ui';

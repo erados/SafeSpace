@@ -18,6 +18,12 @@ async function saveFilter(filter) {
 }
 
 function applyFilters(filters) {
+  // Disconnect early-filter observer (early-filter.js) now that main filter takes over
+  if (window.__safespaceEarlyObserver) {
+    window.__safespaceEarlyObserver.disconnect();
+    window.__safespaceEarlyObserver = null;
+  }
+
   // Clean up previous state
   document.querySelectorAll('[data-safespace-hidden]').forEach(el => {
     el.style.display = '';
